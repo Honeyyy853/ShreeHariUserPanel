@@ -1,43 +1,159 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React, { useEffect, useState, useRef } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-    const state = useSelector(state => state.handleCart)
-    return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
-            <div className="container">
-                <NavLink className="navbar-brand fw-bold fs-4 px-2" to="/"> React Ecommerce</NavLink>
-                <button className="navbar-toggler mx-2" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
+  const cartItems = useSelector((state) => state.handleCart);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [showNavbar, setShowNavbar] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const checkLogin = () => {
+      const authStatus = localStorage.getItem("isLoggedIn") === "true";
+      setIsLoggedIn(authStatus);
+    };
+
+    checkLogin();
+    window.addEventListener("storage", checkLogin);
+
+    return () => {
+      window.removeEventListener("storage", checkLogin);
+    };
+  }, []);
+
+ 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("email");
+    localStorage.removeItem("user_id");
+
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
+
+  const menu = [
+    { to: "/", label: "Home" },
+    { to: "/product", label: "Products" },
+    { to: "/about", label: "About" },
+    { to: "/contact", label: "Contact" },
+  ];
+
+  return (
+    <nav
+      key={location.pathname}
+      className={`navbar navbar-expand-lg bg-white shadow-sm sticky-top nav-fade
+      ${showNavbar ? "nav-show" : "nav-hide"}`}
+    >
+      <div className="container py-2">
+        {/* Brand */}
+        <NavLink className="navbar-brand fw-bold fs-4 text-dark" to="/">
+          Shree Hari
+        </NavLink>
+
+        <button
+          className="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          {/* Menu */}
+          <ul className="navbar-nav mx-auto gap-lg-3 text-center fancy-nav">
+            {menu.map((item) => (
+              <li className="nav-item" key={item.to}>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `nav-link fancy-link fw-semibold px-2 ${
+                      isActive ? "active-link" : ""
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          {/* Right actions */}
+          <div className="d-flex align-items-center gap-2 fancy-actions">
+            {!isLoggedIn && (
+              <>
+                <NavLink
+                  to="/login"
+                  className="btn btn-sm btn-outline-dark rounded-pill px-3"
+                >
+                  Login
+                </NavLink>
+
+                <NavLink
+                  to="/register"
+                  className="btn btn-sm btn-dark rounded-pill px-3"
+                >
+                  Register
+                </NavLink>
+              </>
+            )}
+
+            {isLoggedIn && (
+              <>
+                <NavLink
+                  to="/profile"
+                  className="btn btn-sm btn-light border rounded-pill px-3 d-flex align-items-center gap-1"
+                >
+                  <i className="fa fa-user"></i>
+                  Profile
+                </NavLink>
+
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-sm btn-outline-danger rounded-pill px-3"
+                >
+                  Logout
                 </button>
 
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav m-auto my-2 text-center">
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/">Home </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/product">Products</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/about">About</NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/contact">Contact</NavLink>
-                        </li>
-                    </ul>
-                    <div className="buttons text-center">
-                        <NavLink to="/login" className="btn btn-outline-dark m-2"><i className="fa fa-sign-in-alt mr-1"></i> Login</NavLink>
-                        <NavLink to="/register" className="btn btn-outline-dark m-2"><i className="fa fa-user-plus mr-1"></i> Register</NavLink>
-                        <NavLink to="/cart" className="btn btn-outline-dark m-2"><i className="fa fa-cart-shopping mr-1"></i> Cart ({state.length}) </NavLink>
-                    </div>
-                </div>
+                <NavLink
+                  to="/cart"
+                  className="btn btn-sm btn-outline-dark rounded-pill position-relative px-3"
+                >
+                  <i className="fa fa-cart-shopping"></i>
+                  <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                  
+                  </span>
+                </NavLink>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
-
-            </div>
-        </nav>
-    )
-}
-
-export default Navbar
+export default Navbar;

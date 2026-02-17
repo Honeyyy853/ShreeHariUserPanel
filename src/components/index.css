@@ -1,0 +1,213 @@
+.navbar {
+  transition: transform 0.35s ease, opacity 0.35s ease, box-shadow 0.35s ease;
+}
+
+.nav-show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.nav-hide {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+/* ---------- menu hover underline animation ---------- */
+
+.fancy-nav .fancy-link {
+  position: relative;
+  color: #6c757d;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.fancy-nav .fancy-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background: #000;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.fancy-nav .fancy-link:hover {
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.fancy-nav .fancy-link:hover::after {
+  width: 100%;
+}
+
+.fancy-nav .active-link {
+  color: #000 !important;
+}
+
+.fancy-nav .active-link::after {
+  width: 100%;
+}
+
+/* ---------- right buttons hover lift ---------- */
+
+.fancy-actions .btn {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fancy-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- cart badge pulse ---------- */
+
+.fancy-actions .badge {
+  animation: softPulse 1.8s infinite;
+}
+
+@keyframes softPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ---------- navigation fade on route change ---------- */
+
+.nav-fade {
+  animation: navFade 0.25s ease;
+}
+
+@keyframes navFade {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* ---------------- ECOMMERCE HERO ---------------- */
+
+.shop-hero {
+    padding: 80px 0 60px;
+    background: linear-gradient(180deg, #ffffff, #f7f7f7);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.7s ease;
+  }
+  
+  .shop-hero-show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .min-vh-75 {
+    min-height: 75vh;
+  }
+  
+  /* left text animation */
+  
+  .shop-hero-left {
+    animation: shopLeftIn 0.8s ease forwards;
+  }
+  
+  @keyframes shopLeftIn {
+    from {
+      opacity: 0;
+      transform: translateX(-25px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* right image animation */
+  
+  .shop-hero-right {
+    animation: shopRightIn 0.9s ease forwards;
+  }
+  
+  @keyframes shopRightIn {
+    from {
+      opacity: 0;
+      transform: translateX(25px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* badge */
+  
+  .shop-badge {
+    letter-spacing: 0.5px;
+  }
+  
+  /* image card */
+  
+  .shop-image-wrap {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  }
+  
+  /* soft floating effect */
+  
+  .shop-hero-img {
+    border-radius: 24px;
+    transition: transform 0.6s ease;
+  }
+  
+  .shop-image-wrap:hover .shop-hero-img {
+    transform: scale(1.04);
+  }
+  
+  /* title & subtitle polish */
+  
+  .shop-title {
+    line-height: 1.2;
+  }
+  
+  .shop-subtitle {
+    max-width: 520px;
+  }
+  /* ---------------- FOOTER ---------------- */
+
+.shop-footer {
+    background: #ffffff;
+    border-top: 1px solid #eee;
+    padding: 60px 0 30px;
+    opacity: 0;
+    transform: translateY(25px);
+    transition: all 0.6s ease;
+  }
+  
+  .shop-footer-show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .shop-footer-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 10px;
+    color: #444;
+    font-size: 0.95rem;
+  }
+  
+  /* subtle hover feedback */
+  
+  .shop-footer-list li:hover {
+    color: #000;
+  }
+  

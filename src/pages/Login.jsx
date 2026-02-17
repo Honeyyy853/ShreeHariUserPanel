@@ -1,47 +1,135 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Navbar, Footer } from "../components";
+import { CheckCircle } from "lucide-react";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
+  const loginUser = () => {
+    const email = emailRef.current.value.trim();
+    const password = passwordRef.current.value.trim();
+
+    if (!email || !password) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    axios
+      .post("http://localhost/ShreeHari/UserPanelAPI/LoginAPi.php", formData)
+      .then((res) => {
+        if (res.data.status === "true") {
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("email", res.data.email);
+          localStorage.setItem("user_id", res.data.user_id);
+
+          setShowSuccess(true);
+          setTimeout(() => navigate("/"), 1500);
+        } else {
+          alert("Invalid email or password");
+        }
+      })
+      .catch(() => alert("Server error"))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Login</h1>
-        <hr />
-        <div class="row my-4 h-100">
-          <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-            <form>
-              <div class="my-3">
-                <label for="display-4">Email address</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="floatingInput"
-                  placeholder="name@example.com"
-                />
+
+      <div className="container py-5">
+        <div className="row justify-content-center align-items-center">
+          <div className="col-lg-5 col-md-7">
+
+            {showSuccess && (
+              <div className="alert alert-success d-flex align-items-center gap-2 mb-4">
+                <CheckCircle size={18} />
+                <span>Login successful. Redirecting...</span>
               </div>
-              <div class="my-3">
-                <label for="floatingPassword display-4">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="floatingPassword"
-                  placeholder="Password"
-                />
+            )}
+
+            <div
+              className="card border-0 shadow-lg"
+              style={{ borderRadius: "18px" }}
+            >
+              {/* top gradient header */}
+              <div
+                className="text-center text-white py-4"
+                style={{
+                  borderTopLeftRadius: "18px",
+                  borderTopRightRadius: "18px",
+                  background:
+                    "linear-gradient(135deg, #2e7d32, #66bb6a)",
+                }}
+              >
+                <h3 className="mb-1">Welcome Back</h3>
+                <small>Shree Hari Agritech</small>
               </div>
-              <div className="my-3">
-                <p>New Here? <Link to="/register" className="text-decoration-underline text-info">Register</Link> </p>
-              </div>
-              <div className="text-center">
-                <button class="my-2 mx-auto btn btn-dark" type="submit" disabled>
-                  Login
+
+              <div className="card-body p-4 p-md-5">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Email address
+                  </label>
+                  <input
+                    ref={emailRef}
+                    type="email"
+                    className="form-control form-control-lg"
+                    placeholder="Enter your email"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Password
+                  </label>
+                  <input
+                    ref={passwordRef}
+                    type="password"
+                    className="form-control form-control-lg"
+                    placeholder="Enter your password"
+                  />
+                </div>
+
+                <button
+                  onClick={loginUser}
+                  disabled={loading}
+                  className="btn btn-success w-100 py-2 fw-semibold"
+                  style={{ borderRadius: "10px" }}
+                >
+                  {loading ? "Signing in..." : "Sign In"}
                 </button>
+
+                <div className="text-center mt-4">
+                  <span className="text-muted">
+                    Don’t have an account?
+                  </span>{" "}
+                  <Link
+                    to="/register"
+                    className="text-success fw-semibold text-decoration-none"
+                  >
+                    Create account
+                  </Link>
+                </div>
               </div>
-            </form>
+            </div>
+
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );

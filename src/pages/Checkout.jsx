@@ -1,295 +1,263 @@
-import React from "react";
-import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Navbar, Footer } from "../components";
+import axios from "axios";
+
 const Checkout = () => {
-  const state = useSelector((state) => state.handleCart);
+  const [items, setItems] = useState([]);
 
-  const EmptyCart = () => {
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">No item in Cart</h4>
-            <Link to="/" className="btn btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+  const [sameAddress, setSameAddress] = useState("no");
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    pincode: "",
+  });
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    const fd = new FormData();
+    fd.append("user_id", userId);
+
+    axios
+      .post("http://localhost/ShreeHari/UserPanelAPI/viewCartUser.php", fd)
+      .then((res) => {
+        if (res.data.status === "true") {
+          const data = (res.data.data || []).map((i) => ({
+            ...i,
+            qty: Number(i.quantity || 0),
+          }));
+          setItems(data.filter((i) => i.qty > 0));
+        }
+      });
+  }, []);
+
+  const fetchRegisteredAddress = async () => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    const fd = new FormData();
+    fd.append("user_id", userId);
+
+    try {
+      const res = await axios.post(
+        "http://localhost/ShreeHari/users.php",
+        fd
+      );
+
+      if (res.data.status === "true") {
+        const u = res.data.data;
+
+        setForm({
+          name: u.name || "",
+          phone: u.phone || "",
+          address: u.address || "",
+          city: "",
+          pincode: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const ShowCheckout = () => {
-    let subtotal = 0;
-    let shipping = 30.0;
-    let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
-    });
+  const subtotal = items.reduce(
+    (s, i) => s + Number(i.price || 0) * Number(i.qty || 0),
+    0
+  );
 
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
-    return (
-      <>
-        <div className="container py-5">
-          <div className="row my-4">
-            <div className="col-md-5 col-lg-4 order-md-last">
-              <div className="card mb-4">
-                <div className="card-header py-3 bg-light">
-                  <h5 className="mb-0">Order Summary</h5>
-                </div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                      Shipping
-                      <span>${shipping}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                      <div>
-                        <strong>Total amount</strong>
-                      </div>
-                      <span>
-                        <strong>${Math.round(subtotal + shipping)}</strong>
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-7 col-lg-8">
-              <div className="card mb-4">
-                <div className="card-header py-3">
-                  <h4 className="mb-0">Billing address</h4>
-                </div>
-                <div className="card-body">
-                  <form className="needs-validation" novalidate>
-                    <div className="row g-3">
-                      <div className="col-sm-6 my-1">
-                        <label for="firstName" className="form-label">
-                          First name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="firstName"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid first name is required.
-                        </div>
-                      </div>
+  const shipping = items.length > 0 ? 40 : 0;
+  const total = subtotal + shipping;
 
-                      <div className="col-sm-6 my-1">
-                        <label for="lastName" className="form-label">
-                          Last name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="lastName"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid last name is required.
-                        </div>
-                      </div>
-
-                      <div className="col-12 my-1">
-                        <label for="email" className="form-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder="you@example.com"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter a valid email address for shipping
-                          updates.
-                        </div>
-                      </div>
-
-                      <div className="col-12 my-1">
-                        <label for="address" className="form-label">
-                          Address
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address"
-                          placeholder="1234 Main St"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter your shipping address.
-                        </div>
-                      </div>
-
-                      <div className="col-12">
-                        <label for="address2" className="form-label">
-                          Address 2{" "}
-                          <span className="text-muted">(Optional)</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address2"
-                          placeholder="Apartment or suite"
-                        />
-                      </div>
-
-                      <div className="col-md-5 my-1">
-                        <label for="country" className="form-label">
-                          Country
-                        </label>
-                        <br />
-                        <select className="form-select" id="country" required>
-                          <option value="">Choose...</option>
-                          <option>India</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please select a valid country.
-                        </div>
-                      </div>
-
-                      <div className="col-md-4 my-1">
-                        <label for="state" className="form-label">
-                          State
-                        </label>
-                        <br />
-                        <select className="form-select" id="state" required>
-                          <option value="">Choose...</option>
-                          <option>Punjab</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please provide a valid state.
-                        </div>
-                      </div>
-
-                      <div className="col-md-3 my-1">
-                        <label for="zip" className="form-label">
-                          Zip
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="zip"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Zip code required.
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="my-4" />
-
-                    <h4 className="mb-3">Payment</h4>
-
-                    <div className="row gy-3">
-                      <div className="col-md-6">
-                        <label for="cc-name" className="form-label">
-                          Name on card
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-name"
-                          placeholder=""
-                          required
-                        />
-                        <small className="text-muted">
-                          Full name as displayed on card
-                        </small>
-                        <div className="invalid-feedback">
-                          Name on card is required
-                        </div>
-                      </div>
-
-                      <div className="col-md-6">
-                        <label for="cc-number" className="form-label">
-                          Credit card number
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-number"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Credit card number is required
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <label for="cc-expiration" className="form-label">
-                          Expiration
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-expiration"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Expiration date required
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <label for="cc-cvv" className="form-label">
-                          CVV
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-cvv"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Security code required
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="my-4" />
-
-                    <button
-                      className="w-100 btn btn-primary "
-                      type="submit" disabled
-                    >
-                      Continue to checkout
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const placeOrder = () => {
+    if (
+      !form.name ||
+      !form.phone ||
+      !form.address
+    ) {
+      alert("Please fill all address fields");
+      return;
+    }
+
+    if (items.length === 0) {
+      alert("Your cart is empty");
+      return;
+    }
+
+    alert("Order placed (demo)");
+  };
+
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Checkout</h1>
-        <hr />
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+
+      <div className="container my-4">
+        <h3 className="fw-bold mb-4">Checkout</h3>
+
+        {items.length === 0 ? (
+          <p>Your cart is empty.</p>
+        ) : (
+          <div className="row g-4">
+            {/* Left : Address */}
+            <div className="col-md-7">
+              <div className="card p-4">
+
+                {/* Same as registered address */}
+                <div className="mt-3">
+                  <h5 className="mb-3">Same as registered address</h5>
+
+                  <div className="form-check mt-1">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="sameAddress"
+                        id="sameAddressYes"
+                        value="yes"
+                        checked={sameAddress === "yes"}
+                        onChange={() => {
+                          setSameAddress("yes");
+                          fetchRegisteredAddress();
+                        }}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="sameAddressYes"
+                      >
+                        Yes
+                      </label>
+                    </div>
+
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="sameAddress"
+                        id="sameAddressNo"
+                        value="no"
+                        checked={sameAddress === "no"}
+                        onChange={() => {
+                          setSameAddress("no");
+                          setForm({
+                            name: "",
+                            phone: "",
+                            address: "",
+                            city: "",
+                            pincode: "",
+                          });
+                        }}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="sameAddressNo"
+                      >
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <h5 className="mb-3 mt-4">Delivery Address</h5>
+
+                <input
+                  className="form-control mb-2"
+                  placeholder="Full Name"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                />
+
+                <input
+                  className="form-control mb-2"
+                  placeholder="Mobile Number"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
+
+                <textarea
+                  className="form-control mb-2"
+                  placeholder="Full Address"
+                  name="address"
+                  rows="3"
+                  value={form.address}
+                  onChange={handleChange}
+                />
+
+                {/* city and pincode are not in your DB yet */}
+
+                {/* <div className="mt-3">
+                  <b>Payment Method</b>
+                  <div className="form-check mt-1">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      checked
+                      readOnly
+                    />
+                    <label className="form-check-label">
+                      Cash on Delivery
+                    </label>
+                  </div>
+                </div> */}
+              </div>
+            </div>
+
+            {/* Right : Order summary */}
+            <div className="col-md-5">
+              <div className="card p-4">
+                <h5 className="mb-3">Order Summary</h5>
+
+                {items.map((i) => (
+                  <div
+                    key={i.product_id}
+                    className="d-flex justify-content-between mb-2"
+                  >
+                    <div>
+                      {i.name} × {i.qty}
+                    </div>
+                    <div>₹{Number(i.price) * Number(i.qty)}</div>
+                  </div>
+                ))}
+
+                <hr />
+
+                <div className="d-flex justify-content-between">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal}</span>
+                </div>
+
+                <div className="d-flex justify-content-between">
+                  <span>Shipping</span>
+                  <span>₹{shipping}</span>
+                </div>
+
+                <hr />
+
+                <div className="d-flex justify-content-between fw-bold mb-3">
+                  <span>Total</span>
+                  <span>₹{total}</span>
+                </div>
+
+                <button
+                  className="btn btn-success w-100"
+                  onClick={placeOrder}
+                >
+                  Place Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
       <Footer />
     </>
   );

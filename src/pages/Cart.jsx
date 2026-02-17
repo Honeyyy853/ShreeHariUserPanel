@@ -1,162 +1,336 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
-import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Cart = () => {
-  const state = useSelector((state) => state.handleCart);
-  const dispatch = useDispatch();
+  const [cartItems, setCartItems] = useState([]);
 
-  const EmptyCart = () => {
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">Your Cart is Empty</h4>
-            <Link to="/" className="btn  btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    const formData = new FormData();
+    formData.append("user_id", userId);
+
+    axios
+      .post(
+        "http://localhost/ShreeHari/UserPanelAPI/viewCartUser.php",
+        formData
+      )
+      .then((res) => {
+        if (res.data.status === "true") {
+
+          
+          const data = (res.data.data || []).map((i) => ({
+            ...i,
+            qty: Number(i.quantity || 0),
+          }));
+
+          setCartItems(data);
+        } else {
+          setCartItems([]);
+        }
+      })
+      .catch((err) => console.error("Cart API Error", err));
+  }, []);
+
+  // only local UI change
+  const changeLocalQty = (productId, diff) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.product_id === productId
+          ? {
+              ...item,
+              qty: Math.max(0, Number(item.qty || 0) + diff),
+            }
+          : item
+      )
     );
   };
 
-  const addItem = (product) => {
-    dispatch(addCart(product));
+  // update quantity on server
+  const updateQuantity = (productId, newQty) => {
+    if (newQty < 0) return;
+
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    const formData = new FormData();
+    formData.append("productID", productId);
+    formData.append("userId", userId);
+    formData.append("qty", newQty);
+
+    axios
+      .post("http://localhost/ShreeHari/updateCart.php", formData)
+      .then((res) => {
+        if (res.data.status === "true") {
+          setCartItems((prev) =>
+            prev.map((item) =>
+              item.product_id === productId
+                ? { ...item, qty: newQty }
+                : item
+            )
+          );
+        } else {
+          alert(res.data.message || "Update failed");
+        }
+      })
+      .catch((err) => console.error(err));
   };
-  const removeItem = (product) => {
-    dispatch(delCart(product));
+
+  const removeFromCart = (productId) => {
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("product_id", productId);
+
+    axios
+      .post("http://localhost/ShreeHari/UserPanelAPI/removeCart.php", formData)
+      .then((res) => {
+        if (res.data.status === "true") {
+          setCartItems((prev) =>
+            prev.filter((item) => item.product_id !== productId)
+          );
+        } else {
+          alert("Failed to remove item from cart");
+        }
+      })
+      .catch((err) => console.error("Remove from Cart API Error", err));
   };
+
+  const EmptyCart = () => (
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="col-md-8 py-5 text-center">
+          <h3 className="fw-bold mb-3">Your Cart is Empty</h3>
+          <p className="text-muted">
+            Looks like you haven’t added anything yet.
+          </p>
+          <Link
+            to="/"
+            className="btn btn-outline-success px-4 py-2 rounded-pill"
+          >
+            ← Continue Shopping
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 
   const ShowCart = () => {
-    let subtotal = 0;
-    let shipping = 30.0;
-    let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
-    });
+    const getFolder = (cat_id) => {
+      if (cat_id === "1") return "Herbs";
+      if (cat_id === "2") return "DehydratedFruits";
+      if (cat_id === "3") return "DehydratedVegetables";
+      return "Other";
+    };
 
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
+    const subtotal = cartItems.reduce(
+      (sum, item) =>
+        sum + Number(item.price || 0) * Number(item.qty || 0),
+      0
+    );
+
+    const shipping = cartItems.length > 0 ? 40 : 0;
+    const total = subtotal + shipping;
+
     return (
       <>
-        <section className="h-100 gradient-custom">
-          <div className="container py-5">
-            <div className="row d-flex justify-content-center my-4">
-              <div className="col-md-8">
-                <div className="card mb-4">
-                  <div className="card-header py-3">
-                    <h5 className="mb-0">Item List</h5>
+        <style>{`
+.cart-item-card{
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  transition:.25s ease;
+}
+.cart-item-card:hover{
+  box-shadow:0 12px 28px rgba(0,0,0,.08);
+  transform:translateY(-2px);
+}
+.product-img{
+  max-height:90px;
+  object-fit:contain;
+}
+.product-title{
+  font-size:15px;
+  font-weight:600;
+}
+.product-desc{
+  font-size:13px;
+  color:#6b7280;
+}
+.qty-box{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+  background:#f9fafb;
+}
+.qty-btn{
+  border:none;
+  background:transparent;
+  padding:6px 12px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  color:#374151;
+}
+.qty-btn:hover{
+  background:#e5e7eb;
+}
+.qty-value{
+  min-width:28px;
+  text-align:center;
+  font-weight:600;
+  font-size:14px;
+  color:#111827;
+}
+.item-total{
+  font-size:13px;
+  font-weight:600;
+  margin-top:4px;
+  color:#059669;
+}
+.remove-btn{
+  background:#fff1f2;
+  color:#e11d48;
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+}
+.remove-btn:hover{
+  background:#ffe4e6;
+}
+.summary-card{
+  border-radius:20px;
+  border:1px solid #e5e7eb;
+  background:#ffffff;
+  position:sticky;
+  top:90px;
+}
+.summary-row{
+  font-size:14px;
+  color:#374151;
+}
+.summary-total{
+  font-size:16px;
+  font-weight:700;
+}
+        `}</style>
+
+        <div className="row g-4">
+          <div className="col-lg-8">
+            {cartItems.map((item) => (
+              <div
+                className="card cart-item-card mb-3 p-3"
+                key={item.product_id}
+              >
+                <div className="row align-items-center g-3">
+                  <div className="col-md-3 text-center">
+                    <img
+                      src={`http://localhost/ShreeHari/uploads/${getFolder(
+                        item.cat_id
+                      )}/${item.image}`}
+                      alt={item.name}
+                      className="img-fluid rounded product-img"
+                    />
                   </div>
-                  <div className="card-body">
-                    {state.map((item) => {
-                      return (
-                        <div key={item.id}>
-                          <div className="row d-flex align-items-center">
-                            <div className="col-lg-3 col-md-12">
-                              <div
-                                className="bg-image rounded"
-                                data-mdb-ripple-color="light"
-                              >
-                                <img
-                                  src={item.image}
-                                  // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
-                                />
-                              </div>
-                            </div>
 
-                            <div className="col-lg-5 col-md-6">
-                              <p>
-                                <strong>{item.title}</strong>
-                              </p>
-                              {/* <p>Color: blue</p>
-                              <p>Size: M</p> */}
-                            </div>
-
-                            <div className="col-lg-4 col-md-6">
-                              <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
-                              >
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    removeItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-minus"></i>
-                                </button>
-
-                                <p className="mx-5">{item.qty}</p>
-
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    addItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-plus"></i>
-                                </button>
-                              </div>
-
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  <span className="text-muted">{item.qty}</span>{" "}
-                                  x ${item.price}
-                                </strong>
-                              </p>
-                            </div>
-                          </div>
-
-                          <hr className="my-4" />
-                        </div>
-                      );
-                    })}
+                  <div className="col-md-5">
+                    <h6 className="product-title mb-1">{item.name}</h6>
+                    <p className="product-desc mb-0">
+                      {item.description}
+                    </p>
                   </div>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card mb-4">
-                  <div className="card-header py-3 bg-light">
-                    <h5 className="mb-0">Order Summary</h5>
-                  </div>
-                  <div className="card-body">
-                    <ul className="list-group list-group-flush">
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                        Shipping
-                        <span>${shipping}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                        <div>
-                          <strong>Total amount</strong>
-                        </div>
-                        <span>
-                          <strong>${Math.round(subtotal + shipping)}</strong>
-                        </span>
-                      </li>
-                    </ul>
 
-                    <Link
-                      to="/checkout"
-                      className="btn btn-dark btn-lg btn-block"
+                  <div className="col-md-2 text-center">
+                    <div className="qty-box mx-auto mb-2">
+                      <button
+                        className="qty-btn"
+                        onClick={() =>
+                          changeLocalQty(item.product_id, -1)
+                        }
+                      >
+                        −
+                      </button>
+
+                      <div className="qty-value">{item.qty}</div>
+
+                      <button
+                        className="qty-btn"
+                        onClick={() =>
+                          changeLocalQty(item.product_id, 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="item-total">
+                      ₹{Number(item.price) * Number(item.qty)}
+                    </div>
+                  </div>
+
+                  <div className="col-md-2 text-center">
+                    <button
+                      className="remove-btn mb-1"
+                      onClick={() =>
+                        updateQuantity(item.product_id, item.qty)
+                      }
                     >
-                      Go to checkout
-                    </Link>
+                      Update
+                    </button>
+
+                    {/* <button
+                      className="remove-btn"
+                      onClick={() =>
+                        removeFromCart(item.product_id)
+                      }
+                    >
+                      Remove
+                    </button> */}
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          <div className="col-lg-4">
+            <div className="card summary-card p-4">
+              <h5 className="fw-bold mb-3">Order Summary</h5>
+
+              <div className="d-flex justify-content-between mb-2 summary-row">
+                <span>Products</span>
+                <span>₹{subtotal}</span>
+              </div>
+
+              <div className="d-flex justify-content-between mb-2 summary-row">
+                <span>Shipping</span>
+                <span>₹{shipping}</span>
+              </div>
+
+              <hr />
+
+              <div className="d-flex justify-content-between mb-3 summary-total">
+                <span>Total</span>
+                <span>₹{total}</span>
+              </div>
+
+              <Link
+                to="/checkout"
+                className="btn btn-success w-100 py-2 rounded-pill"
+              >
+                Proceed to Checkout
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
       </>
     );
   };
@@ -164,11 +338,12 @@ const Cart = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Cart</h1>
-        <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+
+      <div className="container my-4">
+        <h2 className="text-center fw-bold mb-4">My Cart</h2>
+        {cartItems.length > 0 ? <ShowCart /> : <EmptyCart />}
       </div>
+
       <Footer />
     </>
   );

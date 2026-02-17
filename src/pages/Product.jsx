@@ -21,6 +21,8 @@ const Product = () => {
   };
 
   useEffect(() => {
+
+    alert("hi")
     const getProduct = async () => {
       setLoading(true);
       setLoading2(true);

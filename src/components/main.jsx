@@ -1,28 +1,64 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import "./index.css";
 
 const Home = () => {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShow(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <>
-      <div className="hero border-1 pb-3">
-        <div className="card bg-dark text-white border-0 mx-3">
-          <img
-            className="card-img img-fluid"
-            src="./assets/main.png.jpg"
-            alt="Card"
-            height={500}
-          />
-          <div className="card-img-overlay d-flex align-items-center">
-            <div className="container">
-              <h5 className="card-title fs-1 text fw-lighter">New Season Arrivals</h5>
-              <p className="card-text fs-5 d-none d-sm-block ">
-                This is a wider card with supporting text below as a natural
-                lead-in to additional content. This content is a little bit
-                longer.
+      <section className={`shop-hero ${show ? "shop-hero-show" : ""}`}>
+        <div className="container">
+          <div className="row align-items-center min-vh-75">
+
+            {/* LEFT CONTENT */}
+            <div className="col-lg-6 text-center text-lg-start shop-hero-left">
+              <span className="badge bg-dark mb-3 px-3 py-2 shop-badge">
+                New Collection 2026
+              </span>
+
+              <h1 className="display-5 fw-bold mb-3 shop-title">
+                Discover products that make your life better
+              </h1>
+
+              <p className="lead text-muted mb-4 shop-subtitle">
+                Premium quality items, fast delivery and easy returns.
+                Choose from hundreds of products curated just for you.
               </p>
+
+              <div className="d-flex gap-3 justify-content-center justify-content-lg-start">
+                <NavLink to="/product" className="btn btn-dark px-4 py-2 rounded-pill">
+                  Shop Now
+                </NavLink>
+
+                <NavLink
+                  to="/about"
+                  className="btn btn-outline-dark px-4 py-2 rounded-pill"
+                >
+                  Learn More
+                </NavLink>
+              </div>
             </div>
+
+            {/* RIGHT IMAGE */}
+            <div className="col-lg-6 text-center shop-hero-right">
+              <div className="shop-image-wrap">
+                <img
+                  src="./assets/home.jpg"
+                  alt="Shop hero"
+                  className="img-fluid shop-hero-img"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 };
