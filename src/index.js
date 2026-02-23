@@ -21,6 +21,8 @@ import {
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/profile";
+import Payment from "./pages/Payment";
+import PaymentCheck from "./pages/paymentCheck";
 
 import ProductDetails from "./pages/ProductDetails";
 
@@ -43,7 +45,8 @@ root.render(
           <Route path="*" element={<PageNotFound />} />
           <Route path="/product/*" element={<PageNotFound />} />
           <Route path="/profile" element={<Profile />} />
-
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/paymentCheck" element={<PaymentCheck />} />
           <Route path="/productDetails/:id" element={<ProductDetails />} />
         </Routes>
       </Provider>

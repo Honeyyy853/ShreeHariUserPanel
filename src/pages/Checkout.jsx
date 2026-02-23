@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Footer } from "../components";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 const Checkout = () => {
   const [items, setItems] = useState([]);
+  const navigate = useNavigate();
 
   const [sameAddress, setSameAddress] = useState("no");
 
@@ -43,10 +44,7 @@ const Checkout = () => {
     fd.append("user_id", userId);
 
     try {
-      const res = await axios.post(
-        "http://localhost/ShreeHari/users.php",
-        fd
-      );
+      const res = await axios.post("http://localhost/ShreeHari/users.php", fd);
 
       if (res.data.status === "true") {
         const u = res.data.data;
@@ -77,11 +75,9 @@ const Checkout = () => {
   };
 
   const placeOrder = () => {
-    if (
-      !form.name ||
-      !form.phone ||
-      !form.address
-    ) {
+
+    alert("Order placed (demo)");
+    if (!form.name || !form.phone || !form.address) {
       alert("Please fill all address fields");
       return;
     }
@@ -108,7 +104,6 @@ const Checkout = () => {
             {/* Left : Address */}
             <div className="col-md-7">
               <div className="card p-4">
-
                 {/* Same as registered address */}
                 <div className="mt-3">
                   <h5 className="mb-3">Same as registered address</h5>
@@ -246,14 +241,30 @@ const Checkout = () => {
                   <span>₹{total}</span>
                 </div>
 
-                <button
+                {/* <button
                   className="btn btn-success w-100"
                   onClick={placeOrder}
                 >
                   Place Order
+                </button> */}
+                <button
+                  onClick={() =>
+                    navigate("/payment", {
+                      state: {
+                        items,
+                        address: form,
+                        subtotal,
+                        shipping: 40,
+                        total: subtotal + 40,
+                      },
+                    })
+                  }
+                  className="btn btn-success w-100"
+                >
+                  Place Order
                 </button>
               </div>
-            </div>
+            </div>   
           </div>
         )}
       </div>
