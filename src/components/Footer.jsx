@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { IoCall } from "react-icons/io5";
 
 const Footer = () => {
   const [show, setShow] = useState(false);
@@ -31,7 +32,7 @@ const Footer = () => {
 
             <ul className="list-unstyled shop-footer-list">
               <li>
-                <FaPhone className="me-2 text-success" />
+                <IoCall className="me-2 text-success" />
                 +91 8200050980, +91 9265669191
               </li>
               <li>

@@ -23,6 +23,7 @@ import { Toaster } from "react-hot-toast";
 import Profile from "./pages/profile";
 import Payment from "./pages/Payment";
 import PaymentCheck from "./pages/paymentCheck";
+import Orders from "./pages/Orders";
 
 import ProductDetails from "./pages/ProductDetails";
 
@@ -48,6 +49,7 @@ root.render(
           <Route path="/payment" element={<Payment />} />
           <Route path="/paymentCheck" element={<PaymentCheck />} />
           <Route path="/productDetails/:id" element={<ProductDetails />} />
+          <Route path="/orders" element={<Orders />} />
         </Routes>
       </Provider>
     </ScrollToTop>

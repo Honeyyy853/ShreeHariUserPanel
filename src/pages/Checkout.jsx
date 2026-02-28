@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navbar, Footer } from "../components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 const Checkout = () => {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
@@ -44,7 +45,10 @@ const Checkout = () => {
     fd.append("user_id", userId);
 
     try {
-      const res = await axios.post("http://localhost/ShreeHari/users.php", fd);
+      const res = await axios.post(
+        "http://localhost/ShreeHari/users.php",
+        fd
+      );
 
       if (res.data.status === "true") {
         const u = res.data.data;
@@ -74,11 +78,9 @@ const Checkout = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const placeOrder = () => {
-
-    alert("Order placed (demo)");
+  const handlePlaceOrder = () => {
     if (!form.name || !form.phone || !form.address) {
-      alert("Please fill all address fields");
+      alert("Please enter name, phone and address");
       return;
     }
 
@@ -87,7 +89,16 @@ const Checkout = () => {
       return;
     }
 
-    alert("Order placed (demo)");
+    navigate("/payment", {
+      state: {
+        items,
+        address: form,
+        subtotal,
+        shipping,
+        shippingAddressFinal: form.address,
+        total,
+      },
+    });
   };
 
   return (
@@ -101,65 +112,48 @@ const Checkout = () => {
           <p>Your cart is empty.</p>
         ) : (
           <div className="row g-4">
-            {/* Left : Address */}
+            {/* Left */}
             <div className="col-md-7">
               <div className="card p-4">
-                {/* Same as registered address */}
                 <div className="mt-3">
-                  <h5 className="mb-3">Same as registered address</h5>
+                  <h5 className="mb-3">Same as registered Information</h5>
 
-                  <div className="form-check mt-1">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sameAddress"
-                        id="sameAddressYes"
-                        value="yes"
-                        checked={sameAddress === "yes"}
-                        onChange={() => {
-                          setSameAddress("yes");
-                          fetchRegisteredAddress();
-                        }}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="sameAddressYes"
-                      >
-                        Yes
-                      </label>
-                    </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="sameAddress"
+                      checked={sameAddress === "yes"}
+                      onChange={() => {
+                        setSameAddress("yes");
+                        fetchRegisteredAddress();
+                      }}
+                    />
+                    <label className="form-check-label">Yes</label>
+                  </div>
 
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="sameAddress"
-                        id="sameAddressNo"
-                        value="no"
-                        checked={sameAddress === "no"}
-                        onChange={() => {
-                          setSameAddress("no");
-                          setForm({
-                            name: "",
-                            phone: "",
-                            address: "",
-                            city: "",
-                            pincode: "",
-                          });
-                        }}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="sameAddressNo"
-                      >
-                        No
-                      </label>
-                    </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="sameAddress"
+                      checked={sameAddress === "no"}
+                      onChange={() => {
+                        setSameAddress("no");
+                        setForm({
+                          name: "",
+                          phone: "",
+                          address: "",
+                          city: "",
+                          pincode: "",
+                        });
+                      }}
+                    />
+                    <label className="form-check-label">No</label>
                   </div>
                 </div>
 
-                <h5 className="mb-3 mt-4">Delivery Address</h5>
+                <h5 className="mb-3 mt-4">Delivery Information</h5>
 
                 <input
                   className="form-control mb-2"
@@ -185,27 +179,10 @@ const Checkout = () => {
                   value={form.address}
                   onChange={handleChange}
                 />
-
-                {/* city and pincode are not in your DB yet */}
-
-                {/* <div className="mt-3">
-                  <b>Payment Method</b>
-                  <div className="form-check mt-1">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      checked
-                      readOnly
-                    />
-                    <label className="form-check-label">
-                      Cash on Delivery
-                    </label>
-                  </div>
-                </div> */}
               </div>
             </div>
 
-            {/* Right : Order summary */}
+            {/* Right */}
             <div className="col-md-5">
               <div className="card p-4">
                 <h5 className="mb-3">Order Summary</h5>
@@ -241,30 +218,14 @@ const Checkout = () => {
                   <span>₹{total}</span>
                 </div>
 
-                {/* <button
-                  className="btn btn-success w-100"
-                  onClick={placeOrder}
-                >
-                  Place Order
-                </button> */}
                 <button
-                  onClick={() =>
-                    navigate("/payment", {
-                      state: {
-                        items,
-                        address: form,
-                        subtotal,
-                        shipping: 40,
-                        total: subtotal + 40,
-                      },
-                    })
-                  }
                   className="btn btn-success w-100"
+                  onClick={handlePlaceOrder}
                 >
                   Place Order
                 </button>
               </div>
-            </div>   
+            </div>
           </div>
         )}
       </div>
