@@ -157,7 +157,7 @@ const ProductDetails = () => {
                         <p className="mb-0">{p.description}</p>
                       </div>
 
-                      <button className="cart-btn mt-4">Add to Cart</button>
+                      {/* <button className="cart-btn mt-4">Add to Cart</button> */}
                     </div>
                   </div>
                 </div>

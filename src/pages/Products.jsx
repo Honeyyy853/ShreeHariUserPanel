@@ -58,7 +58,6 @@ const Products = () => {
       .post("http://localhost/ShreeHari/addCartApi.php", formData)
       .then((res) => {
         if (res.data.status === "true") {
-      
           setItem1((prev) =>
             prev.map((p) => (p.id === prod.id ? { ...p, cartStatus: 1 } : p))
           );

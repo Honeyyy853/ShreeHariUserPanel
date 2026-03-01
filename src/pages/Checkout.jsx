@@ -30,7 +30,7 @@ const Checkout = () => {
         if (res.data.status === "true") {
           const data = (res.data.data || []).map((i) => ({
             ...i,
-            qty: Number(i.quantity || 0),
+            qty: Number(i.quantity ?? i.qty ?? 0),
           }));
           setItems(data.filter((i) => i.qty > 0));
         }
@@ -71,8 +71,7 @@ const Checkout = () => {
     0
   );
 
-  const shipping = items.length > 0 ? 40 : 0;
-  const total = subtotal + shipping;
+  const total = subtotal;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -94,7 +93,7 @@ const Checkout = () => {
         items,
         address: form,
         subtotal,
-        shipping,
+
         shippingAddressFinal: form.address,
         total,
       },
@@ -206,10 +205,10 @@ const Checkout = () => {
                   <span>₹{subtotal}</span>
                 </div>
 
-                <div className="d-flex justify-content-between">
+                {/* <div className="d-flex justify-content-between">
                   <span>Shipping</span>
                   <span>₹{shipping}</span>
-                </div>
+                </div> */}
 
                 <hr />
 

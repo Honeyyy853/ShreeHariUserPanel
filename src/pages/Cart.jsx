@@ -20,8 +20,6 @@ const Cart = () => {
       )
       .then((res) => {
         if (res.data.status === "true") {
-
-          
           const data = (res.data.data || []).map((i) => ({
             ...i,
             qty: Number(i.quantity || 0),
@@ -67,9 +65,7 @@ const Cart = () => {
         if (res.data.status === "true") {
           setCartItems((prev) =>
             prev.map((item) =>
-              item.product_id === productId
-                ? { ...item, qty: newQty }
-                : item
+              item.product_id === productId ? { ...item, qty: newQty } : item
             )
           );
         } else {
@@ -129,13 +125,11 @@ const Cart = () => {
     };
 
     const subtotal = cartItems.reduce(
-      (sum, item) =>
-        sum + Number(item.price || 0) * Number(item.qty || 0),
+      (sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0),
       0
     );
 
-    const shipping = cartItems.length > 0 ? 40 : 0;
-    const total = subtotal + shipping;
+    const total = subtotal;
 
     return (
       <>
@@ -244,18 +238,14 @@ const Cart = () => {
 
                   <div className="col-md-5">
                     <h6 className="product-title mb-1">{item.name}</h6>
-                    <p className="product-desc mb-0">
-                      {item.description}
-                    </p>
+                    <p className="product-desc mb-0">{item.description}</p>
                   </div>
 
                   <div className="col-md-2 text-center">
                     <div className="qty-box mx-auto mb-2">
                       <button
                         className="qty-btn"
-                        onClick={() =>
-                          changeLocalQty(item.product_id, -1)
-                        }
+                        onClick={() => changeLocalQty(item.product_id, -1)}
                       >
                         −
                       </button>
@@ -264,9 +254,7 @@ const Cart = () => {
 
                       <button
                         className="qty-btn"
-                        onClick={() =>
-                          changeLocalQty(item.product_id, 1)
-                        }
+                        onClick={() => changeLocalQty(item.product_id, 1)}
                       >
                         +
                       </button>
@@ -280,9 +268,7 @@ const Cart = () => {
                   <div className="col-md-2 text-center">
                     <button
                       className="remove-btn mb-1"
-                      onClick={() =>
-                        updateQuantity(item.product_id, item.qty)
-                      }
+                      onClick={() => updateQuantity(item.product_id, item.qty)}
                     >
                       Update
                     </button>
@@ -305,15 +291,27 @@ const Cart = () => {
             <div className="card summary-card p-4">
               <h5 className="fw-bold mb-3">Order Summary</h5>
 
-              <div className="d-flex justify-content-between mb-2 summary-row">
-                <span>Products</span>
-                <span>₹{subtotal}</span>
+              {/* Products with quantity */}
+              <div className="mb-3">
+                {cartItems.map((item) => (
+                  <div
+                    key={item.product_id}
+                    className="d-flex justify-content-between summary-row"
+                    style={{ marginBottom: "6px" }}
+                  >
+                    <span>
+                      {item.name} × {item.qty}
+                    </span>
+
+                    <span>₹{Number(item.price) * Number(item.qty)}</span>
+                  </div>
+                ))}
               </div>
 
-              <div className="d-flex justify-content-between mb-2 summary-row">
+              {/* <div className="d-flex justify-content-between mb-2 summary-row">
                 <span>Shipping</span>
                 <span>₹{shipping}</span>
-              </div>
+              </div> */}
 
               <hr />
 

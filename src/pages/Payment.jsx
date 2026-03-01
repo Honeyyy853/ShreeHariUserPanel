@@ -23,8 +23,7 @@ const Payment = () => {
     return <div className="container py-5">No order data found</div>;
   }
 
-  const { items, address, subtotal, shipping, total, shippingAddressFinal } =
-    state;
+  const { items, address, subtotal, total, shippingAddressFinal } = state;
 
   const handlePaymentCheck = async () => {
     try {
@@ -208,10 +207,10 @@ const Payment = () => {
                 <span>₹{subtotal}</span>
               </div>
 
-              <div className="d-flex justify-content-between">
+              {/* <div className="d-flex justify-content-between">
                 <span>Shipping</span>
                 <span>₹{shipping}</span>
-              </div>
+              </div> */}
 
               <hr />
 

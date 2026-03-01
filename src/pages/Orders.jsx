@@ -197,7 +197,6 @@ const Orders = () => {
         {orders.map((o) => (
           <div key={o.order_id} className="card mb-4 order-card">
             <div className="row g-0">
-
               {/* LEFT */}
               <div className="col-md-4 p-4 order-left border-end">
                 <div className="mb-3">
@@ -267,9 +266,7 @@ const Orders = () => {
                         {item.product_name}
                       </div>
 
-                      <div className="text-muted small">
-                        {item.description}
-                      </div>
+                      <div className="text-muted small">{item.description}</div>
 
                       <div className="mt-1">
                         <span
@@ -283,7 +280,13 @@ const Orders = () => {
                       </div>
                     </div>
 
-                    <div className="fw-bold text-dark">₹{item.price}</div>
+                    <div className="text-end ms-3">
+                      <div className="fw-bold text-dark">₹{item.price}</div>
+
+                      <div className="text-muted small">
+                        Qty: {item.quantity}
+                      </div>
+                    </div>
                   </div>
                 ))}
 
@@ -315,11 +318,8 @@ const Orders = () => {
       {showTrack && trackOrder && (
         <div className="track-backdrop">
           <div className="track-modal">
-
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0 fw-bold">
-                Order #{trackOrder.order_id}
-              </h5>
+              <h5 className="mb-0 fw-bold">Order #{trackOrder.order_id}</h5>
 
               <button
                 className="btn btn-sm btn-outline-secondary"
@@ -330,7 +330,6 @@ const Orders = () => {
             </div>
 
             <TrackProgress status={trackOrder.order_status} />
-
           </div>
         </div>
       )}
@@ -340,11 +339,9 @@ const Orders = () => {
   );
 };
 
-
 /* ---------------- TRACK PROGRESS COMPONENT ---------------- */
 
 const TrackProgress = ({ status }) => {
-
   const steps = ["pending", "processing", "shipped", "delivered"];
 
   const finalStatus = (status || "").toLowerCase();
@@ -353,17 +350,14 @@ const TrackProgress = ({ status }) => {
   if (finalStatus === "canceled" || finalStatus === "cancelled") {
     return (
       <div className="track-wrapper text-center">
-  
         {/* <div style={{ fontSize: "48px" }}>❌</div> */}
-  
-        <h5 className="fw-bold text-danger mt-2">
-          Order Cancelled
-        </h5>
-  
+
+        <h5 className="fw-bold text-danger mt-2">Order Cancelled</h5>
+
         <p className="text-muted mb-4">
           Your order has been cancelled and will not be processed further.
         </p>
-  
+
         <div
           style={{
             background: "#fff1f2",
@@ -371,12 +365,12 @@ const TrackProgress = ({ status }) => {
             borderRadius: "12px",
             padding: "14px",
             color: "#991b1b",
-            fontWeight: 600
+            fontWeight: 600,
           }}
         >
-          If your payment was already completed, the refund will be initiated shortly.
+          If your payment was already completed, the refund will be initiated
+          shortly.
         </div>
-  
       </div>
     );
   }
@@ -385,31 +379,20 @@ const TrackProgress = ({ status }) => {
 
   return (
     <div className="track-wrapper">
-
       <div className="track-line">
-
         {steps.map((s, i) => (
           <div key={i} className="track-step">
-
-            <div
-              className={`track-circle ${
-                i <= currentStep ? "active" : ""
-              }`}
-            >
+            <div className={`track-circle ${i <= currentStep ? "active" : ""}`}>
               {i <= currentStep ? "✓" : ""}
             </div>
 
             {i !== steps.length - 1 && (
               <div
-                className={`track-bar ${
-                  i < currentStep ? "filled" : ""
-                }`}
+                className={`track-bar ${i < currentStep ? "filled" : ""}`}
               ></div>
             )}
-
           </div>
         ))}
-
       </div>
 
       <div className="track-labels">
@@ -418,7 +401,6 @@ const TrackProgress = ({ status }) => {
         <div>Shipped</div>
         <div>Delivered</div>
       </div>
-
     </div>
   );
 };

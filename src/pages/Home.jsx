@@ -13,13 +13,12 @@ function Home() {
       .then((res) => {
         if (res.data.status) {
           setHerbs(res.data.herb || []);
-          setFruits(res.data.df || []); 
+          setFruits(res.data.df || []);
           setVegetables(res.data.dv || []);
         }
       })
       .catch((err) => console.log(err));
   }, []);
-  
 
   const renderProducts = (items, category) => (
     <div className="container py-5">

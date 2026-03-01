@@ -11,6 +11,7 @@
   transform: translateY(-100%);
   opacity: 0;
 }
+
 /* ---------- menu hover underline animation ---------- */
 
 .fancy-nav .fancy-link {
@@ -69,9 +70,11 @@
   0% {
     transform: translate(-50%, -50%) scale(1);
   }
+
   50% {
     transform: translate(-50%, -50%) scale(1.15);
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1);
   }
@@ -87,127 +90,131 @@
   from {
     opacity: 0.6;
   }
+
   to {
     opacity: 1;
   }
 }
+
 /* ---------------- ECOMMERCE HERO ---------------- */
 
 .shop-hero {
-    padding: 80px 0 60px;
-    background: linear-gradient(180deg, #ffffff, #f7f7f7);
-    overflow: hidden;
+  padding: 80px 0 60px;
+  background: linear-gradient(180deg, #ffffff, #f7f7f7);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.7s ease;
+}
+
+.shop-hero-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+/* left text animation */
+
+.shop-hero-left {
+  animation: shopLeftIn 0.8s ease forwards;
+}
+
+@keyframes shopLeftIn {
+  from {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.7s ease;
+    transform: translateX(-25px);
   }
-  
-  .shop-hero-show {
+
+  to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
-  
-  .min-vh-75 {
-    min-height: 75vh;
+}
+
+/* right image animation */
+
+.shop-hero-right {
+  animation: shopRightIn 0.9s ease forwards;
+}
+
+@keyframes shopRightIn {
+  from {
+    opacity: 0;
+    transform: translateX(25px);
   }
-  
-  /* left text animation */
-  
-  .shop-hero-left {
-    animation: shopLeftIn 0.8s ease forwards;
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
-  
-  @keyframes shopLeftIn {
-    from {
-      opacity: 0;
-      transform: translateX(-25px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  /* right image animation */
-  
-  .shop-hero-right {
-    animation: shopRightIn 0.9s ease forwards;
-  }
-  
-  @keyframes shopRightIn {
-    from {
-      opacity: 0;
-      transform: translateX(25px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  /* badge */
-  
-  .shop-badge {
-    letter-spacing: 0.5px;
-  }
-  
-  /* image card */
-  
-  .shop-image-wrap {
-    position: relative;
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
-  }
-  
-  /* soft floating effect */
-  
-  .shop-hero-img {
-    border-radius: 24px;
-    transition: transform 0.6s ease;
-  }
-  
-  .shop-image-wrap:hover .shop-hero-img {
-    transform: scale(1.04);
-  }
-  
-  /* title & subtitle polish */
-  
-  .shop-title {
-    line-height: 1.2;
-  }
-  
-  .shop-subtitle {
-    max-width: 520px;
-  }
-  /* ---------------- FOOTER ---------------- */
+}
+
+/* badge */
+
+.shop-badge {
+  letter-spacing: 0.5px;
+}
+
+/* image card */
+
+.shop-image-wrap {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* soft floating effect */
+
+.shop-hero-img {
+  border-radius: 24px;
+  transition: transform 0.6s ease;
+}
+
+.shop-image-wrap:hover .shop-hero-img {
+  transform: scale(1.04);
+}
+
+/* title & subtitle polish */
+
+.shop-title {
+  line-height: 1.2;
+}
+
+.shop-subtitle {
+  max-width: 520px;
+}
+
+/* ---------------- FOOTER ---------------- */
 
 .shop-footer {
-    background: #ffffff;
-    border-top: 1px solid #eee;
-    padding: 60px 0 30px;
-    opacity: 0;
-    transform: translateY(25px);
-    transition: all 0.6s ease;
-  }
-  
-  .shop-footer-show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  .shop-footer-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    margin-bottom: 10px;
-    color: #444;
-    font-size: 0.95rem;
-  }
-  
-  /* subtle hover feedback */
-  
-  .shop-footer-list li:hover {
-    color: #000;
-  }
-  
+  background: #ffffff;
+  border-top: 1px solid #eee;
+  padding: 60px 0 30px;
+  opacity: 0;
+  transform: translateY(25px);
+  transition: all 0.6s ease;
+}
+
+.shop-footer-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shop-footer-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+/* subtle hover feedback */
+
+.shop-footer-list li:hover {
+  color: #000;
+}
