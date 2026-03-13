@@ -7,10 +7,9 @@ const Orders = () => {
   const userId = localStorage.getItem("user_id");
   const [orders, setOrders] = useState([]);
 
-  // 👉 new states
   const [showTrack, setShowTrack] = useState(false);
-  const [trackOrder, setTrackOrder] = useState(null);
 
+  const [trackItem, setTrackItem] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -262,12 +261,34 @@ const Orders = () => {
                     </div>
 
                     <div className="flex-grow-1">
-                      <div className="fw-semibold text-dark">
-                        {item.product_name}
+                      {/* ✅ PRODUCT NAME */}
+                      <div className="fw-bold">{item.product_name}</div>
+
+                      {/* ✅ STATUS */}
+                      <div className="mt-1">
+                        <span
+                          className={`badge ${
+                            item.item_status === "Delivered"
+                              ? "bg-success"
+                              : item.item_status === "Shipped"
+                              ? "bg-primary"
+                              : item.item_status === "Processing"
+                              ? "bg-warning text-dark"
+                              : item.item_status === "Cancelled"
+                              ? "bg-danger"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          {item.item_status}
+                        </span>
                       </div>
 
-                      <div className="text-muted small">{item.description}</div>
+                      {/* ✅ DESCRIPTION */}
+                      <div className="text-muted small mt-1">
+                        {item.description}
+                      </div>
 
+                      {/* ✅ VIEW PRODUCT */}
                       <div className="mt-1">
                         <span
                           className="small view-link"
@@ -279,7 +300,17 @@ const Orders = () => {
                         </span>
                       </div>
                     </div>
-
+                    <div className="d-flex gap-3 justify-content-end">
+                      <button
+                        className="btn btn-sm track-btn px-3"
+                        onClick={() => {
+                          setTrackItem(item);
+                          setShowTrack(true);
+                        }}
+                      >
+                        Track Order
+                      </button>
+                    </div>
                     <div className="text-end ms-3">
                       <div className="fw-bold text-dark">₹{item.price}</div>
 
@@ -291,22 +322,9 @@ const Orders = () => {
                 ))}
 
                 <hr />
-
-                <div className="d-flex gap-3 justify-content-end">
-                  <button
-                    className="btn btn-sm track-btn px-3"
-                    onClick={() => {
-                      setTrackOrder(o);
-                      setShowTrack(true);
-                    }}
-                  >
-                    Track Order
-                  </button>
-
-                  <button className="btn btn-sm invoice-btn px-3">
-                    View Invoice
-                  </button>
-                </div>
+                <button className="btn btn-sm invoice-btn px-3">
+                  View Invoice
+                </button>
               </div>
             </div>
           </div>
@@ -315,11 +333,11 @@ const Orders = () => {
 
       {/* -------- TRACK MODAL -------- */}
 
-      {showTrack && trackOrder && (
+      {showTrack && trackItem && (
         <div className="track-backdrop">
           <div className="track-modal">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0 fw-bold">Order #{trackOrder.order_id}</h5>
+              <h5 className="mb-0 fw-bold">Order #{trackItem.order_id}</h5>
 
               <button
                 className="btn btn-sm btn-outline-secondary"
@@ -329,7 +347,7 @@ const Orders = () => {
               </button>
             </div>
 
-            <TrackProgress status={trackOrder.order_status} />
+            <TrackProgress status={trackItem.item_status} />
           </div>
         </div>
       )}

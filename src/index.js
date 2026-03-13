@@ -26,6 +26,7 @@ import PaymentCheck from "./pages/paymentCheck";
 import Orders from "./pages/Orders";
 
 import ProductDetails from "./pages/ProductDetails";
+import OrderHistory from "./pages/OrderHistory";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -50,6 +51,7 @@ root.render(
           <Route path="/paymentCheck" element={<PaymentCheck />} />
           <Route path="/productDetails/:id" element={<ProductDetails />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/orderhistory" element={<OrderHistory />} />
         </Routes>
       </Provider>
     </ScrollToTop>

@@ -138,7 +138,13 @@ const Navbar = () => {
                   <i className="fa fa-shopping-cart"></i>
                   Orders
                 </NavLink>
-
+                <NavLink
+                  to="/orderhistory"
+                  className="btn btn-sm btn-light border rounded-pill px-3 d-flex align-items-center gap-1"
+                >
+                  <i className="fa fa-history"></i>
+                  Order History
+                </NavLink>
                 <button
                   onClick={handleLogout}
                   className="btn btn-sm btn-outline-danger rounded-pill px-3"

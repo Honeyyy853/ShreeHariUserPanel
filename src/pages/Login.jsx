@@ -34,7 +34,13 @@ const Login = () => {
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("email", res.data.email);
           localStorage.setItem("user_id", res.data.user_id);
-
+          const mailData = new FormData();
+          mailData.append("email", email);
+          mailData.append("type", "login");
+          axios
+            .post("http://localhost/ShreeHari/sendMail.php", mailData)
+            .then(() => console.log("Welcome email sent"))
+            .catch((err) => console.log("Mail error:", err));
           setShowSuccess(true);
           setTimeout(() => navigate("/"), 1500);
         } else {
@@ -52,7 +58,6 @@ const Login = () => {
       <div className="container py-5">
         <div className="row justify-content-center align-items-center">
           <div className="col-lg-5 col-md-7">
-
             {showSuccess && (
               <div className="alert alert-success d-flex align-items-center gap-2 mb-4">
                 <CheckCircle size={18} />
@@ -70,8 +75,7 @@ const Login = () => {
                 style={{
                   borderTopLeftRadius: "18px",
                   borderTopRightRadius: "18px",
-                  background:
-                    "linear-gradient(135deg, #2e7d32, #66bb6a)",
+                  background: "linear-gradient(135deg, #2e7d32, #66bb6a)",
                 }}
               >
                 <h3 className="mb-1">Welcome Back</h3>
@@ -92,9 +96,7 @@ const Login = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">
-                    Password
-                  </label>
+                  <label className="form-label fw-semibold">Password</label>
                   <input
                     ref={passwordRef}
                     type="password"
@@ -113,9 +115,7 @@ const Login = () => {
                 </button>
 
                 <div className="text-center mt-4">
-                  <span className="text-muted">
-                    Don’t have an account?
-                  </span>{" "}
+                  <span className="text-muted">Don’t have an account?</span>{" "}
                   <Link
                     to="/register"
                     className="text-success fw-semibold text-decoration-none"
@@ -125,7 +125,6 @@ const Login = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

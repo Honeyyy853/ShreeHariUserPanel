@@ -42,34 +42,49 @@ const Payment = () => {
         name: "Demo Company",
         description: "Payment of ₹" + total,
 
-        handler: function (response) {
+        handler: async function (response) {
+          console.log("Razorpay Response:", response);
+
           const formdata = new FormData();
           formdata.append("user_id", localStorage.getItem("user_id"));
           formdata.append("items", JSON.stringify(items));
-          formdata.append("payment_id", response.razorpay_payment_id);
           formdata.append("payment_method", "online");
+          formdata.append("payment_id", response.razorpay_payment_id);
+          formdata.append("order_id", response.razorpay_order_id);
+          formdata.append("signature", response.razorpay_signature);
           formdata.append("shipping_address", shippingAddressFinal);
 
+          try {
+            await axios.post("http://localhost/ShreeHari/orders.php", formdata);
+
+            const formdata2 = new FormData();
+            formdata2.append("user_id", localStorage.getItem("user_id"));
+
+            await axios.post(
+              "http://localhost/ShreeHari/clearCart.php",
+              formdata2
+            );
+
+            clearCart();
+
+            alert(
+              "Payment Successful\nPayment ID: " + response.razorpay_payment_id
+            );
+
+            navigate("/");
+          } catch (err) {
+            console.error(err);
+            alert("Order saving failed");
+          }
+
+          // Send email
+          const maildata = new FormData();
+          maildata.append("email", localStorage.getItem("email"));
+          maildata.append("type", "order");
+
           axios
-            .post("http://localhost/ShreeHari/orders.php", formdata)
-            .then(async () => {
-              const formdata2 = new FormData();
-              formdata2.append("user_id", localStorage.getItem("user_id"));
-
-              await axios.post(
-                "http://localhost/ShreeHari/clearCart.php",
-                formdata2
-              );
-
-              clearCart();
-
-              alert(
-                "Payment successful\nPayment ID : " +
-                  response.razorpay_payment_id
-              );
-
-              navigate("/");
-            });
+            .post("http://localhost/ShreeHari/sendmail.php", maildata)
+            .then((res) => console.log(res.data));
         },
 
         prefill: {
@@ -154,9 +169,7 @@ const Payment = () => {
                   checked={method === "cod"}
                   onChange={() => setMethod("cod")}
                 />
-                <label className="form-check-label">
-                  Cash on Delivery
-                </label>
+                <label className="form-check-label">Cash on Delivery</label>
               </div>
 
               <div className="form-check mb-2">
@@ -176,9 +189,7 @@ const Payment = () => {
                   checked={method === "card"}
                   onChange={() => setMethod("card")}
                 />
-                <label className="form-check-label">
-                  Debit / Credit Card
-                </label>
+                <label className="form-check-label">Debit / Credit Card</label>
               </div>
             </div>
           </div>

@@ -43,6 +43,7 @@ const Register = () => {
         if (res.data.status === "true") {
           const mailData = new FormData();
           mailData.append("email", email);
+          mailData.append("type", "register");
 
           axios
             .post("http://localhost/ShreeHari/sendMail.php", mailData)
