@@ -16,7 +16,7 @@ const Orders = () => {
     if (!userId) return;
 
     axios
-      .get("http://localhost/ShreeHari/get_user_orders.php?user_id=" + userId)
+      .get("http://localhost/ShreeHari/get_user_active_orders.php?user_id=" + userId)
       .then((res) => {
         setOrders(res.data.data || []);
       })

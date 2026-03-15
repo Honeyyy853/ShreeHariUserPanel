@@ -93,7 +93,28 @@ const Products = () => {
           --primary: #198754;
           --dark: #0f172a;
         }
+.ribbon{
+position:absolute;
+top:12px;
+left:-35px;
+background:#e11d48;
+color:#fff;
+padding:6px 45px;
+font-size:11px;
+font-weight:700;
+transform:rotate(-45deg);
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+letter-spacing:.5px;
+z-index:10;
+pointer-events:none;
+}
 
+.img-wrapper{
+height:230px;
+overflow:hidden;
+background:#f1f5f9;
+position:relative;
+}
         .products-section {
           background: linear-gradient(180deg, #f8fafc, #ffffff);
         }
@@ -133,6 +154,7 @@ const Products = () => {
           height: 230px;
           overflow: hidden;
           background:#f1f5f9;
+          position: relative;
         }
 
         .product-img {
@@ -238,6 +260,8 @@ const Products = () => {
                 >
                   <div className="card product-card h-100">
                     <div className="img-wrapper">
+                      {prod.offerId && <div className="ribbon">OFFER</div>}
+
                       <img
                         src={`http://localhost/ShreeHari/uploads/${folder}/${prod.image}`}
                         alt={prod.name}

@@ -14,7 +14,7 @@ const OrderHistory = () => {
     if (!userId) return;
 
     axios
-      .get(`http://localhost/ShreeHari/get_user_orders.php?user_id=${userId}`)
+      .get(`http://localhost/ShreeHari/get_user_order_history.php?user_id=${userId}`)
       .then((res) => {
         if (res.data && res.data.data) {
           setOrders(res.data.data);
